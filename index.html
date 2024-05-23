@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>LINE WORKS WOFF App</title>
+    <script src="https://static.worksmobile.com/woff-sdk/v1/woff.js"></script>
+</head>
+<body>
+    <h1>LINE WORKS WOFF App</h1>
+    <button id="callButton">Call</button>
+    <script>
+        // WOFFアプリの初期化
+        woff.init({
+            woffId: "あなたのWOFF ID" // 発行されたWOFF IDを指定する
+        }).then(() => {
+            console.log("WOFF initialized successfully");
+
+            document.getElementById('callButton').addEventListener('click', function() {
+                woff.getAccessToken().then((token) => {
+                    const userId = '対象ユーザーのID';  // 電話をかけたいユーザーのID
+                    const callType = 'audio';  // 音声通話
+
+                    fetch('https://api.worksmobile.com/v1/calls', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: JSON.stringify({
+                            userId: userId,
+                            type: callType
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Call initiated:', data);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                }).catch((error) => {
+                    console.error('Error getting access token:', error);
+                });
+            });
+        }).catch((err) => {
+            console.log(err.code, err.message);
+        });
+    </script>
+</body>
+</html>
